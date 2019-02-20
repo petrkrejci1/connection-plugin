@@ -2,94 +2,101 @@ import { renderConnection, renderPathData, updateConnection } from './utils';
 
 export class Picker {
 
-    constructor(editor) {
-        this.el = document.createElement('div');
-        this.editor = editor;
-        this._output = null;
+  constructor(editor) {
+    this.el = document.createElement('div');
+    this.editor = editor;
+    this._output = null;
+  }
+
+  get output() {
+    return this._output;
+  }
+
+  set output(val) {
+    const { area } = this.editor.view;
+
+    this._output = val;
+    if (val !== null) {
+      area.appendChild(this.el);
+      this.renderConnection();
+    } else if (this.el.parentElement) {
+      area.removeChild(this.el);
+      this.el.innerHTML = '';
+    }
+  }
+
+  reset() {
+    this.output = null;
+  }
+
+  pickOutput(output) {
+    if (output && !this.output) {
+      this.output = output;
+    }
+  }
+
+  // eslint-disable-next-line max-statements
+  pickInput(input) {
+    let isRecursiveNodeConnection = false;
+
+    if (this.output != undefined)
+    isRecursiveNodeConnection = input.node.id == this.output.node.id ? true : false;
+
+    if (this.output === null) {
+      if (input.hasConnection()) {
+        this.output = input.connections[0].output;
+        this.editor.removeConnection(input.connections[0]);
+      }
+      return true;
     }
 
-    get output() {
-        return this._output;
+    if (!input.multipleConnections && input.hasConnection() && !isRecursiveNodeConnection)
+      this.editor.removeConnection(input.connections[0]);
+
+    if (!this.output.multipleConnections && this.output.hasConnection())
+      this.editor.removeConnection(this.output.connections[0]);
+
+    if (this.output.connectedTo(input)) {
+      var connection = input.connections.find(c => c.output === this.output);
+
+      this.editor.removeConnection(connection);
     }
 
-    set output(val) {
-        const { area } = this.editor.view;
-
-        this._output = val;
-        if (val !== null) {
-            area.appendChild(this.el);
-            this.renderConnection();
-        } else if (this.el.parentElement) {
-            area.removeChild(this.el)
-            this.el.innerHTML = '';
-        }
+    if (!isRecursiveNodeConnection) {
+      this.editor.connect(this.output, input);
+      this.reset();
     }
+  }
 
-    reset() {
-        this.output = null;
-    }
+  pickConnection(connection) {
+    const { output } = connection;
 
-    pickOutput(output) {
-        if (this.output) this.reset();
-        
-        this.output = output;
-    }
+    this.editor.removeConnection(connection);
+    this.output = output;
+  }
 
-    // eslint-disable-next-line max-statements
-    pickInput(input) {
-        if (this.output === null) {
-            if (input.hasConnection()) {
-                this.output = input.connections[0].output;
-                this.editor.removeConnection(input.connections[0]);
-            }
-            return true;
-        }
+  getPoints() {
+    const mouse = this.editor.view.area.mouse;
+    const node = this.editor.view.nodes.get(this.output.node);
+    const [x1, y1] = node.getSocketPosition(this.output);
 
-        if (!input.multipleConnections && input.hasConnection())
-            this.editor.removeConnection(input.connections[0]);
-        
-        if (!this.output.multipleConnections && this.output.hasConnection())
-            this.editor.removeConnection(this.output.connections[0]);
-        
-        if (this.output.connectedTo(input)) {
-            var connection = input.connections.find(c => c.output === this.output);
+    return [x1, y1, mouse.x, mouse.y];
+  }
 
-            this.editor.removeConnection(connection);
-        }
+  updateConnection() {
+    if (!this.output) return;
 
-        this.editor.connect(this.output, input);
-        this.reset();
-    }
+    const d = renderPathData(this.editor, this.getPoints());
 
-    pickConnection(connection) {
-        const { output } = connection;
+    updateConnection({ el: this.el, d });
+  }
 
-        this.editor.removeConnection(connection);
-        this.output = output;
-    }
+  renderConnection() {
+    if (!this.output) return;
 
-    getPoints() {
-        const mouse = this.editor.view.area.mouse;
-        const node = this.editor.view.nodes.get(this.output.node);
-        const [x1, y1] = node.getSocketPosition(this.output);
+    const d = renderPathData(this.editor, this.getPoints());
 
-        return [x1, y1, mouse.x, mouse.y];
-    }
-
-    updateConnection() {
-        if (!this.output) return;
-
-        const d = renderPathData(this.editor, this.getPoints());
-
-        updateConnection({ el: this.el, d });
-    }
-
-    renderConnection() {
-        if (!this.output) return;
-
-        const d = renderPathData(this.editor, this.getPoints());
-
-        renderConnection({ el: this.el, d, connection: null });
-    }
+    renderConnection({ el: this.el, d, connection: null });
+  }
 
 }
