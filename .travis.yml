@@ -13,11 +13,26 @@ cache:
   directories:
     - "node_modules"
 
-deploy:
-  provider: releases
-  api_key: $GITHUB_TOKEN
-  file_glob: true
-  file: build/*
-  skip_cleanup: true
-  on:
-    tags: true
+jobs:
+    include:
+        - stage: Release to GitHub
+           deploy: 
+              provider: releases
+              api_key: $GITHUB_TOKEN
+              file_glob: true
+              file: build/*
+              skip_cleanup: true
+              on:
+                tags: true
+        - stage: Release to NPM
+          deploy:
+            provider: npm
+            email: '$NPM_EMAIL'
+            api_key: '$NPM_TOKEN'
+            skip_cleanup: true
+            on:
+                tags: true
+ branches:
+    only:
+        - master
+        -/^v[0-9]+.*$/
