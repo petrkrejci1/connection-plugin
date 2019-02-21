@@ -1,9 +1,8 @@
-import { renderConnection, renderPathData, updateConnection } from './utils';
+import { renderConnection, renderPathData, updateConnection } from "./utils";
 
 export class Picker {
-
   constructor(editor) {
-    this.el = document.createElement('div');
+    this.el = document.createElement("div");
     this.editor = editor;
     this._output = null;
   }
@@ -21,7 +20,7 @@ export class Picker {
       this.renderConnection();
     } else if (this.el.parentElement) {
       area.removeChild(this.el);
-      this.el.innerHTML = '';
+      this.el.innerHTML = "";
     }
   }
 
@@ -41,7 +40,8 @@ export class Picker {
     let isRecursiveNodeConnection = false;
 
     if (this.output != undefined)
-    isRecursiveNodeConnection = input.node.id == this.output.node.id ? true : false;
+      isRecursiveNodeConnection =
+        input.node.id == this.output.node.id ? true : false;
 
     if (this.output === null) {
       if (input.hasConnection()) {
@@ -51,7 +51,11 @@ export class Picker {
       return true;
     }
 
-    if (!input.multipleConnections && input.hasConnection() && !isRecursiveNodeConnection)
+    if (
+      !input.multipleConnections &&
+      input.hasConnection() &&
+      !isRecursiveNodeConnection
+    )
       this.editor.removeConnection(input.connections[0]);
 
     if (!this.output.multipleConnections && this.output.hasConnection())
@@ -99,5 +103,4 @@ export class Picker {
 
     renderConnection({ el: this.el, d, connection: null });
   }
-
 }
