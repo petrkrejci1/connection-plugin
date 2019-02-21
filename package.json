@@ -6,7 +6,7 @@
   "module": "build/connection-plugin.esm.js",
   "types": "src/index.d.ts",
   "scripts": {
-    "lint": "eslint src --fix",
+    "lint": "eslint src/*.js --fix",
     "build": "rete --build rete.config.js",
     "build:dev": "rete --build rete.config.js --watch",
     "prepublishOnly": "npm run lint && npm run build",

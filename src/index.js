@@ -1,4 +1,4 @@
-// import './index.sass'
+import './index.sass'
 import { renderConnection, renderPathData, updateConnection } from './utils';
 import { Picker } from './picker';
 
