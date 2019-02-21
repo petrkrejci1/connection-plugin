@@ -37,6 +37,7 @@ export class Picker {
 
   // eslint-disable-next-line max-statements
   pickInput(input) {
+    // Used to detect node self recursion before happening
     let isRecursiveNodeConnection = false;
 
     if (this.output != undefined)
