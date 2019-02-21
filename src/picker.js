@@ -39,9 +39,9 @@ export class Picker {
     // Used to detect node self recursion before happening
         let isRecursiveNodeConnection = false;
 
-        if (this.output != undefined)
+        if (this.output !== 'undefined')
             isRecursiveNodeConnection =
-        input.node.id == this.output.node.id ? true : false;
+        input.node.id === this.output.node.id ? true : false;
 
         if (this.output === null) {
             if (input.hasConnection()) {
