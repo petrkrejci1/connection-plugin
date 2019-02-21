@@ -1,6 +1,6 @@
 {
   "name": "connection-plugin",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "description": "JavaScript plugin",
   "main": "build/connection-plugin.common.js",
   "module": "build/connection-plugin.esm.js",
